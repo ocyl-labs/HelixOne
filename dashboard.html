@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Market Geometry Dashboard 2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        /* UI Overlay */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online { background: #4caf50; }
+        .status-warning { background: #ff9800; }
+        .status-error { background: #f44336; }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #64ffda;
+        }
+
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #64ffda;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: auto;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <h2>Loading Market Data...</h2>
+            <p>Fetching real-time financial data and calculating geometric patterns</p>
+        </div>
+
+        <!-- UI Overlay -->
+        <div class="ui-overlay">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <h2>Market Controls</h2>
+                
+                <div class="control-group">
+                    <h3>View Mode</h3>
+                    <button id="btn-all" class="active" onclick="toggleAssetType('all')">All Assets</button>
+                    <button id="btn-stocks" onclick="toggleAssetType('stocks')">Stocks</button>
+                    <button id="btn-crypto" onclick="toggleAssetType('crypto_coins')">Crypto</button>
+                    <button id="btn-fx" onclick="toggleAssetType('fx_pairs')">Forex</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>Visual Settings</h3>
+                    <div class="control-row">
+                        <label>Animation Speed</label>
+                        <input type="range" id="animation-speed" min="0.1" max="3" step="0.1" value="1">
+                    </div>
+                    <div class="control-row">
+                        <label>Shape Scale</label>
+                        <input type="range" id="shape-scale" min="0.5" max="5" step="0.1" value="1">
+                    </div>
+                    <div class="control-row">
+                        <label>Correlation Lines</label>
+                        <input type="checkbox" id="show-correlations" checked>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Indicators</h3>
+                    <button id="btn-rsi" class="active" onclick="toggleIndicator('rsi')">RSI</button>
+                    <button id="btn-macd" class="active" onclick="toggleIndicator('macd')">MACD</button>
+                    <button id="btn-bb" class="active" onclick="toggleIndicator('bb_squeeze')">Bollinger</button>
+                    <button id="btn-volume" class="active" onclick="toggleIndicator('volume_profile')">Volume</button>
+                </div>
+
+                <div class="control-group">
+                    <button onclick="refreshData()">🔄 Refresh Data</button>
+                    <button onclick="resetView()">🎯 Reset View</button>
+                </div>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="info-panel">
+                <h2>Asset Details</h2>
+                <div id="asset-info">
+                    <p>Hover over an asset to see details</p>
+                </div>
+                
+                <div id="market-metrics">
+                    <h3>Market Overview</h3>
+                    <div class="metric-item">
+                        <span>Total Assets:</span>
+                        <span class="metric-value" id="total-assets">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>Avg Confluence:</span>
+                        <span class="metric-value" id="avg-confluence">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>Market Sentiment:</span>
+                        <span class="metric-value" id="market-sentiment">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>Data Status:</span>
+                        <span><span class="status-indicator status-online"></span>Live</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <h3>Shape Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4caf50;"></div>
+                    <span>Bullish Sentiment (Green)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f44336;"></div>
+                    <span>Bearish Sentiment (Red)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffeb3b;"></div>
+                    <span>High Volatility (Bright)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9c27b0;"></div>
+                    <span>High Confluence (Purple)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltip -->
+        <div id="tooltip" class="tooltip"></div>
+    </div>
+
+    <!-- Three.js and Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let marketData = {};
+        let shapeData = {};
+        let assetMeshes = {};
+        let correlationLines = [];
+        let animationSettings = {
+            speed: 1,
+            scale: 1,
+            showCorrelations: true
+        };
+        let activeIndicators = new Set(['rsi', 'macd', 'bb_squeeze', 'volume_profile']);
+        let currentAssetFilter = 'all';
+
+        // Initialize the 3D scene
+        function initScene() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(30, 20, 30);
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Orbit controls (simplified version)
+            setupControls();
+
+            // Lighting
+            setupLighting();
+
+            // Event listeners
+            setupEventListeners();
+
+            console.log('✅ 3D Scene initialized');
+        }
+
+        function setupControls() {
+            // Simple mouse controls
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition.x = e.clientX;
+                previousMousePosition.y = e.clientY;
+            });
+
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const deltaY = e.clientY - previousMousePosition.y;
+
+                    // Rotate camera around origin
+                    const spherical = new THREE.Spherical();
+                    spherical.setFromVector3(camera.position);
+                    spherical.theta -= deltaX * 0.01;
+                    spherical.phi += deltaY * 0.01;
+                    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+
+                    camera.position.setFromSpherical(spherical);
+                    camera.lookAt(0, 0, 0);
+
+                    previousMousePosition.x = e.clientX;
+                    previousMousePosition.y = e.clientY;
+                }
+            });
+
+            renderer.domElement.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Zoom with mouse wheel
+            renderer.domElement.addEventListener('wheel', (e) => {
+                const scale = e.deltaY > 0 ? 1.1 : 0.9;
+                camera.position.multiplyScalar(scale);
+            });
+        }
+
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+
+            // Main directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            // Point lights for ambiance
+            const pointLight1 = new THREE.PointLight(0x64ffda, 0.3, 100);
+            pointLight1.position.set(20, 20, 20);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0xff6b9d, 0.3, 100);
+            pointLight2.position.set(-20, -20, -20);
+            scene.add(pointLight2);
+        }
+
+        function setupEventListeners() {
+            // Window resize
+            window.addEventListener('resize', onWindowResize);
+
+            // Mouse hover for tooltips
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+
+            // Control panel events
+            document.getElementById('animation-speed').addEventListener('input', (e) => {
+                animationSettings.speed = parseFloat(e.target.value);
+            });
+
+            document.getElementById('shape-scale').addEventListener('input', (e) => {
+                animationSettings.scale = parseFloat(e.target.value);
+                updateAllShapeScales();
+            });
+
+            document.getElementById('show-correlations').addEventListener('change', (e) => {
+                animationSettings.showCorrelations = e.target.checked;
+                updateCorrelationLines();
+            });
+        }
+
+        // Load market data
+        async function loadMarketData() {
+            try {
+                // Try to load from generated JSON files
+                const responses = await Promise.allSettled([
+                    fetch('data/market_data.json'),
+                    fetch('data/shape_mapping.json'),
+                    fetch('data/correlations.json')
+                ]);
+
+                if (responses[0].status === 'fulfilled' && responses[0].value.ok) {
+                    marketData = await responses[0].value.json();
+                } else {
+                    // Fallback: generate sample data
+                    marketData = generateSampleData();
+                }
+
+                if (responses[1].status === 'fulfilled' && responses[1].value.ok) {
+                    shapeData = await responses[1].value.json();
+                } else {
+                    shapeData = generateShapeData(marketData);
+                }
+
+                console.log('✅ Market data loaded');
+                return true;
+
+            } catch (error) {
+                console.warn('⚠️ Using sample data:', error.message);
+                marketData = generateSampleData();
+                shapeData = generateShapeData(marketData);
+                return true;
+            }
+        }
+
+        // Generate sample data for demonstration
+        function generateSampleData() {
+            const sampleData = {
+                stocks: {},
+                crypto_coins: {},
+                fx_pairs: {},
+                precious_metals: {}
+            };
+
+            // Sample stocks
+            const stocks = ['AAPL', 'MSFT', 'GOOGL', 'TSLA', '^GSPC'];
+            stocks.forEach(symbol => {
+                sampleData.stocks[symbol] = createSampleAsset(symbol, 'stock');
+            });
+
+            // Sample crypto
+            const cryptos = ['bitcoin', 'ethereum', 'cardano'];
+            cryptos.forEach(symbol => {
+                sampleData.crypto_coins[symbol] = createSampleAsset(symbol, 'crypto');
+            });
+
+            // Sample FX
+            const fx = ['EURUSD=X', 'GBPUSD=X'];
+            fx.forEach(symbol => {
+                sampleData.fx_pairs[symbol] = createSampleAsset(symbol, 'fx');
+            });
+
+            return sampleData;
+        }
+
+        function createSampleAsset(symbol, type) {
+            const sentiment = (Math.random() - 0.5) * 2; // -1 to 1
+            const volatility = Math.random() * 0.1;
+            const confluence = Math.random();
+
+            return {
+                symbol: symbol,
+                current_price: Math.random() * 1000,
+                price_change_24h: (Math.random() - 0.5) * 10,
+                volume: Math.random() * 1000000,
+                sentiment: sentiment,
+                entropy: Math.random(),
+                confluence_magnitude: confluence,
+                confluence_vector: [
+                    (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 2
+                ],
+                indicators: {
+                    rsi: Math.random() * 100,
+                    macd: (Math.random() - 0.5) * 0.1,
+                    bb_squeeze: Math.random() * 0.2,
+                    stochastic: Math.random() * 100,
+                    volatility: volatility
+                },
+                last_updated: new Date().toISOString()
+            };
+        }
+
+        function generateShapeData(marketData) {
+            const shapes = {};
+            
+            Object.keys(marketData).forEach(assetType => {
+                shapes[assetType] = {};
+                
+                Object.keys(marketData[assetType]).forEach(symbol => {
+                    const data = marketData[assetType][symbol];
+                    const sentiment = data.sentiment || 0;
+                    const volatility = data.indicators?.volatility || 0.02;
+                    const confluence = data.confluence_magnitude || 0.5;
+                    
+                    shapes[assetType][symbol] = {
+                        position: {
+                            x: data.confluence_vector[0] * 15,
+                            y: data.confluence_vector[1] * 15,
+                            z: data.confluence_vector[2] * 15
+                        },
+                        scale: {
+                            base: Math.max(0.5, confluence * 3),
+                            volatility_multiplier: 1 + volatility * 10
+                        },
+                        color: {
+                            hue: sentiment > 0 ? 0.33 : 0.0,
+                            saturation: Math.min(Math.abs(sentiment) + 0.4, 1.0),
+                            lightness: Math.max(0.3, 0.7 - volatility * 3)
+                        },
+                        animation: {
+                            pulse_frequency: Math.max(0.1, 1.0 / (1 + Math.abs(sentiment))),
+                            rotation_speed: data.entropy * 0.2,
+                            oscillation_amplitude: volatility
+                        },
+                        shape_type: determineShapeType(data),
+                        metadata: data
+                    };
+                });
+            });
+            
+            return shapes;
+        }
+
+        function determineShapeType(assetData) {
+            const confluence = assetData.confluence_magnitude || 0.5;
+            const volatility = assetData.indicators?.volatility || 0.02;
+            const rsi = assetData.indicators?.rsi || 50;
+            
+            if (confluence > 0.7) return 'icosahedron';
+            if (volatility > 0.05) return 'octahedron';
+            if (rsi > 70 || rsi < 30) return 'tetrahedron';
+            return 'sphere';
+        }
+
+        // Create 3D shapes for assets
+        function createAssetShapes() {
+            // Clear existing shapes
+            Object.values(assetMeshes).forEach(mesh => {
+                scene.remove(mesh);
+            });
+            assetMeshes = {};
+
+            // Create new shapes
+            Object.keys(shapeData).forEach(assetType => {
+                if (currentAssetFilter !== 'all' && currentAssetFilter !== assetType) {
+                    return;
+                }
+
+                Object.keys(shapeData[assetType]).forEach(symbol => {
+                    const shapeInfo = shapeData[assetType][symbol];
+                    const mesh = createAssetMesh(symbol, shapeInfo);
+                    
+                    if (mesh) {
+                        scene.add(mesh);
+                        assetMeshes[symbol] = mesh;
+                    }
+                });
+            });
+
+            updateMarketMetrics();
+            console.log(`✅ Created ${Object.keys(assetMeshes).length} asset shapes`);
+        }
+
+        function createAssetMesh(symbol, shapeInfo) {
+            try {
+                // Create geometry based on shape type
+                let geometry;
+                const size = shapeInfo.scale.base * animationSettings.scale;
+
+                switch (shapeInfo.shape_type) {
+                    case 'icosahedron':
+                        geometry = new THREE.IcosahedronGeometry(size, 1);
+                        break;
+                    case 'octahedron':
+                        geometry = new THREE.OctahedronGeometry(size, 0);
+                        break;
+                    case 'tetrahedron':
+                        geometry = new THREE.TetrahedronGeometry(size, 0);
+                        break;
+                    default:
+                        geometry = new THREE.SphereGeometry(size, 16, 16);
+                }
+
+                // Create material with color based on sentiment
+                const color = new THREE.Color();
+                color.setHSL(
+                    shapeInfo.color.hue,
+                    shapeInfo.color.saturation,
+                    shapeInfo.color.lightness
+                );
+
+                const material = new THREE.MeshPhongMaterial({
+                    color: color,
+                    shininess: 100,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                // Create mesh
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                // Set position
+                mesh.position.set(
+                    shapeInfo.position.x,
+                    shapeInfo.position.y,
+                    shapeInfo.position.z
+                );
+
+                // Store metadata
+                mesh.userData = {
+                    symbol: symbol,
+                    shapeInfo: shapeInfo,
+                    originalScale: size,
+                    animationPhase: Math.random() * Math.PI * 2
+                };
+
+                return mesh;
+
+            } catch (error) {
+                console.error(`Error creating mesh for ${symbol}:`, error);
+                return null;
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001 * animationSettings.speed;
+
+            // Animate asset shapes
+            Object.values(assetMeshes).forEach(mesh => {
+                const userData = mesh.userData;
+                const shapeInfo = userData.shapeInfo;
+                
+                // Rotation animation
+                mesh.rotation.y += shapeInfo.animation.rotation_speed * animationSettings.speed;
+                mesh.rotation.x += shapeInfo.animation.rotation_speed * 0.5 * animationSettings.speed;
+
+                // Pulsing animation
+                const pulseScale = 1 + Math.sin(time * shapeInfo.animation.pulse_frequency + userData.animationPhase) * 0.1;
+                mesh.scale.setScalar(pulseScale);
+
+                // Oscillation
+                const oscillation = Math.sin(time * 0.5 + userData.animationPhase) * shapeInfo.animation.oscillation_amplitude;
+                mesh.position.y = shapeInfo.position.y + oscillation;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Event handlers
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            // Raycasting for hover effects (simplified)
+            const mouse = new THREE.Vector2();
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(Object.values(assetMeshes));
+
+            if (intersects.length > 0) {
+                const intersectedMesh = intersects[0].object;
+                showTooltip(event, intersectedMesh.userData.symbol, intersectedMesh.userData.shapeInfo);
+            } else {
+                hideTooltip();
+            }
+        }
+
+        function showTooltip(event, symbol, shapeInfo) {
+            const tooltip = document.getElementById('tooltip');
+            const metadata = shapeInfo.metadata;
+            
+            const tooltipContent = `
+                <strong>${symbol}</strong><br>
+                Price: ${metadata.current_price?.toFixed(2) || 'N/A'}<br>
+                Change: ${metadata.price_change_24h?.toFixed(2) || 'N/A'}%<br>
+                Sentiment: ${metadata.sentiment?.toFixed(2) || 'N/A'}<br>
+                Confluence: ${metadata.confluence_magnitude?.toFixed(2) || 'N/A'}<br>
+                RSI: ${metadata.indicators?.rsi?.toFixed(1) || 'N/A'}
+            `;
+            
+            tooltip.innerHTML = tooltipContent;
+            tooltip.style.left = event.clientX + 10 + 'px';
+            tooltip.style.top = event.clientY - 10 + 'px';
+            tooltip.style.opacity = '1';
+
+            // Update info panel
+            updateAssetInfo(symbol, metadata);
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').style.opacity = '0';
+        }
+
+        function updateAssetInfo(symbol, metadata) {
+            const infoDiv = document.getElementById('asset-info');
+            
+            const infoContent = `
+                <h3>${symbol}</h3>
+                <div class="metric-item">
+                    <span>Current Price:</span>
+                    <span class="metric-value">${metadata.current_price?.toFixed(2) || 'N/A'}</span>
+                </div>
+                <div class="metric-item">
+                    <span>24h Change:</span>
+                    <span class="metric-value" style="color: ${(metadata.price_change_24h || 0) >= 0 ? '#4caf50' : '#f44336'}">
+                        ${metadata.price_change_24h?.toFixed(2) || 'N/A'}%
+                    </span>
+                </div>
+                <div class="metric-item">
+                    <span>Sentiment:</span>
+                    <span class="metric-value">${metadata.sentiment?.toFixed(3) || 'N/A'}</span>
+                </div>
+                <div class="metric-item">
+                    <span>Confluence:</span>
+                    <span class="metric-value">${metadata.confluence_magnitude?.toFixed(3) || 'N/A'}</span>
+                </div>
+                <div class="metric-item">
+                    <span>RSI:</span>
+                    <span class="metric-value">${metadata.indicators?.rsi?.toFixed(1) || 'N/A'}</span>
+                </div>
+                <div class="metric-item">
+                    <span>MACD:</span>
+                    <span class="metric-value">${metadata.indicators?.macd?.toFixed(4) || 'N/A'}</span>
+                </div>
+                <div class="metric-item">
+                    <span>Volatility:</span>
+                    <span class="metric-value">${(metadata.indicators?.volatility * 100)?.toFixed(2) || 'N/A'}%</span>
+                </div>
+            `;
+            
+            infoDiv.innerHTML = infoContent;
+        }
+
+        // Control functions
+        function toggleAssetType(assetType) {
+            // Update button states
+            document.querySelectorAll('[id^="btn-"]').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${assetType === 'crypto_coins' ? 'crypto' : assetType === 'all' ? 'all' : assetType}`).classList.add('active');
+            
+            currentAssetFilter = assetType;
+            createAssetShapes();
+        }
+
+        function toggleIndicator(indicator) {
+            const button = document.getElementById(`btn-${indicator}`);
+            
+            if (activeIndicators.has(indicator)) {
+                activeIndicators.delete(indicator);
+                button.classList.remove('active');
+            } else {
+                activeIndicators.add(indicator);
+                button.classList.add('active');
+            }
+            
+            // Recalculate shapes based on active indicators
+            updateShapeColors();
+        }
+
+        function updateShapeColors() {
+            Object.values(assetMeshes).forEach(mesh => {
+                const shapeInfo = mesh.userData.shapeInfo;
+                const metadata = shapeInfo.metadata;
+                
+                // Recalculate color based on active indicators
+                let sentiment = 0;
+                let activeCount = 0;
+                
+                activeIndicators.forEach(indicator => {
+                    if (metadata.indicators && metadata.indicators[indicator] !== undefined) {
+                        let value = metadata.indicators[indicator];
+                        
+                        // Normalize different indicators
+                        switch (indicator) {
+                            case 'rsi':
+                                value = (value - 50) / 50; // -1 to 1
+                                break;
+                            case 'stochastic':
+                                value = (value - 50) / 50; // -1 to 1
+                                break;
+                            case 'macd':
+                                value = Math.tanh(value * 100); // -1 to 1
+                                break;
+                            default:
+                                value = Math.tanh(value * 10); // -1 to 1
+                        }
+                        
+                        sentiment += value;
+                        activeCount++;
+                    }
+                });
+                
+                if (activeCount > 0) {
+                    sentiment /= activeCount;
+                }
+                
+                // Update color
+                const color = new THREE.Color();
+                color.setHSL(
+                    sentiment > 0 ? 0.33 : 0.0,
+                    Math.min(Math.abs(sentiment) + 0.4, 1.0),
+                    Math.max(0.3, 0.7 - (metadata.indicators?.volatility || 0.02) * 3)
+                );
+                
+                mesh.material.color = color;
+            });
+        }
+
+        function updateAllShapeScales() {
+            Object.values(assetMeshes).forEach(mesh => {
+                const originalScale = mesh.userData.originalScale;
+                mesh.scale.setScalar(originalScale * animationSettings.scale);
+            });
+        }
+
+        function updateCorrelationLines() {
+            // Remove existing correlation lines
+            correlationLines.forEach(line => scene.remove(line));
+            correlationLines = [];
+            
+            if (!animationSettings.showCorrelations) {
+                return;
+            }
+            
+            // Add correlation lines (simplified implementation)
+            const meshArray = Object.values(assetMeshes);
+            
+            for (let i = 0; i < meshArray.length; i++) {
+                for (let j = i + 1; j < meshArray.length; j++) {
+                    const meshA = meshArray[i];
+                    const meshB = meshArray[j];
+                    
+                    // Calculate correlation (simplified)
+                    const correlation = Math.random() * 0.8; // Placeholder
+                    
+                    if (correlation > 0.5) {
+                        const geometry = new THREE.BufferGeometry().setFromPoints([
+                            meshA.position,
+                            meshB.position
+                        ]);
+                        
+                        const material = new THREE.LineBasicMaterial({
+                            color: new THREE.Color().setHSL(0.6, 0.7, 0.5),
+                            transparent: true,
+                            opacity: correlation * 0.3
+                        });
+                        
+                        const line = new THREE.Line(geometry, material);
+                        scene.add(line);
+                        correlationLines.push(line);
+                    }
+                }
+            }
+        }
+
+        function updateMarketMetrics() {
+            const totalAssets = Object.keys(assetMeshes).length;
+            
+            let totalConfluence = 0;
+            let totalSentiment = 0;
+            let count = 0;
+            
+            Object.values(shapeData).forEach(assetType => {
+                Object.values(assetType).forEach(shape => {
+                    if (shape.metadata) {
+                        totalConfluence += shape.metadata.confluence_magnitude || 0;
+                        totalSentiment += shape.metadata.sentiment || 0;
+                        count++;
+                    }
+                });
+            });
+
+            document.getElementById('total-assets').textContent = totalAssets;
+            document.getElementById('avg-confluence').textContent = count > 0 ? (totalConfluence / count).toFixed(3) : 'N/A';
+            
+            const avgSentiment = count > 0 ? totalSentiment / count : 0;
+            const sentimentText = avgSentiment > 0.1 ? 'Bullish' : avgSentiment < -0.1 ? 'Bearish' : 'Neutral';
+            document.getElementById('market-sentiment').textContent = `${sentimentText} (${avgSentiment.toFixed(3)})`;
+        }
+
+        function refreshData() {
+            document.getElementById('loading-screen').style.display = 'flex';
+            
+            setTimeout(async () => {
+                try {
+                    await loadMarketData();
+                    createAssetShapes();
+                    updateCorrelationLines();
+                    console.log('✅ Data refreshed');
+                } catch (error) {
+                    console.error('Error refreshing data:', error);
+                } finally {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        function resetView() {
+            camera.position.set(30, 20, 30);
+            camera.lookAt(0, 0, 0);
+            
+            animationSettings.speed = 1;
+            animationSettings.scale = 1;
+            document.getElementById('animation-speed').value = 1;
+            document.getElementById('shape-scale').value = 1;
+            
+            updateAllShapeScales();
+        }
+
+        // Initialize application
+        async function init() {
+            console.log('🚀 Initializing Financial Market Geometry Dashboard...');
+            
+            try {
+                // Initialize 3D scene
+                initScene();
+                
+                // Load market data
+                await loadMarketData();
+                
+                // Create asset shapes
+                createAssetShapes();
+                
+                // Setup correlation lines
+                updateCorrelationLines();
+                
+                // Start animation loop
+                animate();
+                
+                // Hide loading screen
+                document.getElementById('loading-screen').style.display = 'none';
+                
+                console.log('✅ Dashboard initialized successfully');
+                
+            } catch (error) {
+                console.error('❌ Initialization error:', error);
+                
+                // Show error message
+                const loadingScreen = document.getElementById('loading-screen');
+                loadingScreen.innerHTML = `
+                    <div class="loading-spinner" style="border-top-color: #f44336;"></div>
+                    <h2 style="color: #f44336;">Error Loading Dashboard</h2>
+                    <p>Please check console for details</p>
+                    <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Reload Page
+                    </button>
+                `;
+            }
+        }
+
+        // Auto-refresh data every 5 minutes
+        setInterval(() => {
+            console.log('🔄 Auto-refreshing market data...');
+            refreshData();
+        }, 5 * 60 * 1000);
+
+        // Start the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Export functions for external access
+        window.MarketDashboard = {
+            refreshData,
+            resetView,
+            toggleAssetType,
+            toggleIndicator,
+            updateShapeColors,
+            marketData,
+            shapeData
+        };
+    </script>
+</body>
+</html>ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: auto;
+            min-width: 250px;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: auto;
+            max-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 2000;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #64ffda;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .control-row label {
+            flex: 1;
+            font-size: 12px;
+            color: #cccccc;
+        }
+
+        input[type="range"] {
+            flex: 2;
+            margin-left: 10px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            margin: 2px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        button.active {
+            background: linear-gradient(45deg, #64ffda, #00bcd4);
+        }
+
+        .
