@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelixOne Market Intelligence - AI-Powered Trading Insights</title>
+    <meta name="description" content="Transform your trading with AI-powered market intelligence. Real-time signals, predictive analytics, and actionable insights for smarter trading decisions.">
+    <meta property="og:title" content="HelixOne Market Intelligence - AI-Powered Trading">
+    <meta property="og:description" content="Trade smarter with AI. Get real-time market signals and predictive analytics.">
+    <meta property="og:image" content="https://helixone.com/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(30, 58, 138, 0.1);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1e3a8a, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1e3a8a;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #1e3a8a, #10b981);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(30, 58, 138, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #10b981 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="grid" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:white;stop-opacity:0.05"/><stop offset="100%" style="stop-color:white;stop-opacity:0.02"/></linearGradient></defs><g stroke="url(%23grid)" stroke-width="1" fill="none"><path d="M0,100 L1200,100 M0,200 L1200,200 M0,300 L1200,300 M0,400 L1200,400 M0,500 L1200,500 M0,600 L1200,600 M0,700 L1200,700"/><path d="M100,0 L100,800 M200,0 L200,800 M300,0 L300,800 M400,0 L400,800 M500,0 L500,800 M600,0 L600,800 M700,0 L700,800 M800,0 L800,800 M900,0 L900,800 M1000,0 L1000,800 M1100,0 L1100,800"/></g></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            line-height: 1.2;
+        }
+
+        .hero .tagline {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .primary-cta {
+            background: white;
+            color: #1e3a8a;
+            padding: 18px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .primary-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .secondary-cta {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-cta:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .social-proof {
+            margin-top: 50px;
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 20px;
+            background: white;
+        }
+
+        .section-header {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #1e3a8a, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            font-size: 1.3rem;
+            color: #6b7280;
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05), rgba(16, 185, 129, 0.05));
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(30, 58, 138, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(30, 58, 138, 0.15);
+            border-color: #1e3a8a;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: #1e3a8a;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.8;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #f9fafb, #ffffff);
+        }
+
+        .pricing-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            border-color: #1e3a8a;
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(30, 58, 138, 0.2);
+        }
+
+        .pricing-card.featured:hover {
+            transform: translateY(-10px) scale(1.08);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .plan-price span {
+            font-size: 1.2rem;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .plan-description {
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .pricing-card.featured .plan-features li {
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .pricing-card.featured .plan-features li::before {
+            color: #10b981;
+        }
+
+        .plan-cta {
+            display: block;
+            text-align: center;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #1e3a8a, #10b981);
+            color: white;
+        }
+
+        .pricing-card.featured .plan-cta {
+            background: white;
+            color: #1e3a8a;
+        }
+
+        .plan-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Social Share Section */
+        .social-share {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #1e3a8a, #10b981);
+            color: white;
+            text-align: center;
+        }
+
+        .social-share h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: white;
+            color: #1e3a8a;
+            transform: translateY(-3px);
+        }
+
+        .referral-code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .referral-code h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .code-box {
+            background: white;
+            color: #1e3a8a;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 60px 20px 30px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #10b981;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Viral Content Widget */
+        .viral-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #1e3a8a, #10b981);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            max-width: 300px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .viral-widget h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .viral-widget p {
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .viral-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .viral-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: white;
+            color: #1e3a8a;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .viral-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero .tagline {
+                font-size: 1.3rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .viral-widget {
+                bottom: 20px;
+                right: 20px;
+                max-width: calc(100% - 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1e3a8a"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M25,95 Q35,25 60,60 Q85,95 95,25" stroke="url(#navGrad)" stroke-width="5" fill="none"/>
+                    <path d="M25,25 Q35,95 60,60 Q85,25 95,95" stroke="url(#navGrad)" stroke-width="5" fill="none"/>
+                    <circle cx="60" cy="60" r="6" fill="url(#navGrad)"/>
+                </svg>
+                HelixOne
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#about">About</a>
+                <a href="#" class="cta-button">Start Free Trial</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <svg class="hero-logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ffffff"/>
+                        <stop offset="50%" style="stop-color:#10b981"/>
+                        <stop offset="100%" style="stop-color:#ffffff"/>
+                    </linearGradient>
+                    <filter id="heroGlow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+                <path d="M25,95 Q35,25 60,60 Q85,95 95,25" stroke="url(#heroGrad)" stroke-width="6" fill="none" filter="url(#heroGlow)"/>
+                <path d="M25,25 Q35,95 60,60 Q85,25 95,95" stroke="url(#heroGrad)" stroke-width="6" fill="none" filter="url(#heroGlow)"/>
+                <circle cx="60" cy="60" r="8" fill="white" filter="url(#heroGlow)"/>
+            </svg>
+            
+            <h1>Trade Smarter with AI</h1>
+            <p class="tagline">Market Intelligence That Actually Works</p>
+            <p class="subtitle">Real-time signals • Predictive analytics • Actionable insights</p>
+            
+            <div class="hero-cta">
+                <a href="#" class="primary-cta" onclick="trackClick('hero_signup')">Start Free Trial</a>
+                <a href="#" class="secondary-cta" onclick="trackClick('hero_demo')">Watch Demo</a>
+            </div>
+            
+            <div class="social-proof">
+                <div class="stat">
+                    <span class="stat-number">10K+</span>
+                    <span class="stat-label">Active Traders</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">94.7%</span>
+                    <span class="stat-label">AI Accuracy</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">$2.4M+</span>
+                    <span class="stat-label">Insights Delivered</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2>Powered by Advanced AI</h2>
+            <p>Everything you need to make smarter trading decisions</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🧠</span>
+                <h3>AI-Powered Predictions</h3>
+                <p>Advanced machine learning models analyze thousands of market signals in real-time to deliver actionable insights with confidence scores.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>Real-Time Alerts</h3>
+                <p>Never miss an opportunity. Get instant notifications for market movements, price targets, and AI-detected patterns.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>Multi-Asset Coverage</h3>
+                <p>Stocks, ETFs, options, forex, and crypto. One platform for all your trading intelligence needs.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3>Precision Signals</h3>
+                <p>Clear buy/sell/hold signals backed by data. Know exactly when to enter or exit positions.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🔒</span>
+                <h3>Enterprise Security</h3>
+                <p>Bank-level encryption and SOC 2 compliance. Your data is protected by the same security as major financial institutions.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📱</span>
+                <h3>Trade Anywhere</h3>
+                <p>Web, iOS, and Android apps. Your market intelligence travels with you, optimized for every device.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="section-header">
+            <h2>Choose Your Plan</h2>
+            <p>Start free, upgrade when you're ready</p>
+        </div>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="plan-name">Free</div>
+                <div class="plan-price">$0<span>/month</span></div>
+                <div class="plan-description">Perfect for getting started</div>
+                <ul class="plan-features">
+                    <li>15-min delayed data</li>
+                    <li>5 watchlist stocks</li>
+                    <li>Daily market summary</li>
+                    <li>Educational content</li>
+                    <li>Community access</li>
+                </ul>
+                <a href="#" class="plan-cta" onclick="trackClick('pricing_free')">Start Free</a>
+            </div>
+            
+            <div class="pricing-card">
+                <div class="plan-name">Basic</div>
+                <div class="plan-price">$29<span>/month</span></div>
+                <div class="plan-description">For casual investors</div>
+                <ul class="plan-features">
+                    <li>Real-time data</li>
+                    <li>25 watchlist stocks</li>
+                    <li>AI daily insights</li>
+                    <li>Price & volume alerts</li>
+                    <li>Mobile app access</li>
+                    <li>Email support</li>
+                </ul>
+                <a href="#" class="plan-cta" onclick="trackClick('pricing_basic')">Get Started</a>
+            </div>
+            
+            <div class="pricing-card featured">
+                <div class="plan-name">Professional</div>
+                <div class="plan-price">$99<span>/month</span></div>
+                <div class="plan-description">Most popular for active traders</div>
+                <ul class="plan-features">
+                    <li>Everything in Basic</li>
+                    <li>Advanced AI predictions</li>
+                    <li>Multi-asset coverage</li>
+                    <li>Unlimited watchlists</li>
+                    <li>Custom indicators</li>
+                    <li>API access</li>
+                    <li>Priority support</li>
+                </ul>
+                <a href="#" class="plan-cta" onclick="trackClick('pricing_pro')">Start Trial</a>
+            </div>
+            
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-price">$499+<span>/month</span></div>
+                <div class="plan-description">For institutions & teams</div>
+                <ul class="plan-features">
+                    <li>Everything in Pro</li>
+                    <li>Custom AI models</li>
+                    <li>White-label options</li>
+                    <li>Full API access</li>
+                    <li>Dedicated support</li>
+                    <li>SLA guarantees</li>
+                    <li>Team management</li>
+                </ul>
+                <a href="#" class="plan-cta" onclick="trackClick('pricing_enterprise')">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Share Section -->
+    <section class="social-share">
+        <h2>Share HelixOne & Earn Rewards</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 40px;">Get 30% commission for every referral + exclusive perks</p>
+        
+        <div class="social-buttons">
+            <a href="#" class="social-btn" onclick="shareTwitter()">
+                <span>🐦</span> Share on Twitter
+            </a>
+            <a href="#" class="social-btn" onclick="shareLinkedIn()">
+                <span>💼</span> Share on LinkedIn
+            </a>
+            <a href="#" class="social-btn" onclick="shareFacebook()">
+                <span>📘</span> Share on Facebook
+            </a>
+            <a href="#" class="social-btn" onclick="shareReddit()">
+                <span>🔴</span> Share on Reddit
+            </a>
+        </div>
+        
+        <div class="referral-code">
+            <h3>Your Referral Code</h3>
+            <div class="code-box" id="referralCode">HELIX2025</div>
+            <p>Share this code and earn 30% recurring commission on all referrals!</p>
+            <button class="viral-btn" onclick="copyReferralCode()" style="width: 100%; margin-top: 10px;">Copy Code</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>HelixOne</h3>
+                <p>AI-powered market intelligence for smarter trading decisions.</p>
+                <p style="margin-top: 20px; opacity: 0.7;">Designed and Created by OCYL Digital Labs</p>
+                <p style="opacity: 0.7;">© 2025 OCYL, LLC</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Product</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#">API Documentation</a></li>
+                    <li><a href="#">Integrations</a></li>
+                    <li><a href="#">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">Trading Guides</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Webinars</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press Kit</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <ul>
+                    <li><a href="https://twitter.com/helixone">Twitter</a></li>
+                    <li><a href="https://linkedin.com/company/helixone">LinkedIn</a></li>
+                    <li><a href="https://instagram.com/helixonemarkets">Instagram</a></li>
+                    <li><a href="https://youtube.com/@helixone">YouTube</a></li>
+                    <li><a href="https://discord.gg/helixone">Discord</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>HelixOne Market Intelligence is a product of OCYL Digital Labs, a division of OCYL, LLC (Arkansas Corporation)</p>
+            <p style="margin-top: 10px;">Disclaimer: HelixOne provides information and analysis tools only. Not investment advice. Trading involves risk.</p>
+        </div>
+    </footer>
+
+    <!-- Viral Widget -->
+    <div class="viral-widget" id="viralWidget">
+        <h4>🚀 Love HelixOne?</h4>
+        <p>Share with your network and earn 30% commission on every referral!</p>
+        <div class="viral-actions">
+            <button class="viral-btn" onclick="shareViral()">Share Now</button>
+            <button class="viral-btn" onclick="closeWidget()" style="background: rgba(255,255,255,0.3); color: white;">Later</button>
+        </div>
+    </div>
+
+    <script>
+        // Viral Marketing Engine - Auto-share mechanisms
+        
+        // Track all clicks for analytics
+        function trackClick(action) {
+            console.log('Tracking:', action);
+            // In production, send to analytics (Mixpanel, GA4, etc.)
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click', {
+                    'event_category': 'engagement',
+                    'event_label': action
+                });
+            }
+        }
+
+        // Social sharing functions with pre-populated viral content
+        function shareTwitter() {
+            const text = "Just discovered HelixOne - AI-powered market intelligence that actually works! 🚀 Trading smarter with real-time signals and predictive analytics. Check it out:";
+            const url = "https://helixone.com?ref=twitter";
+            const hashtags = "AI,Trading,MarketIntelligence,HelixOne";
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${hashtags}`, '_blank');
+            trackClick('share_twitter');
+        }
+
+        function shareLinkedIn() {
+            const url = "https://helixone.com?ref=linkedin";
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+            trackClick('share_linkedin');
+        }
+
+        function shareFacebook() {
+            const url = "https://helixone.com?ref=facebook";
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+            trackClick('share_facebook');
+        }
+
+        function shareReddit() {
+            const url = "https://helixone.com?ref=reddit";
+            const title = "AI-Powered Market Intelligence Platform - HelixOne";
+            window.open(`https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`, '_blank');
+            trackClick('share_reddit');
+        }
+
+        function shareViral() {
+            // Show share options
+            if (navigator.share) {
+                navigator.share({
+                    title: 'HelixOne Market Intelligence',
+                    text: 'Trade smarter with AI-powered market intelligence!',
+                    url: 'https://helixone.com?ref=viral'
+                });
+            } else {
+                shareTwitter();
+            }
+            trackClick('viral_widget_share');
+        }
+
+        function copyReferralCode() {
+            const code = document.getElementById('referralCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Referral code copied! Share it with your network to earn 30% commission.');
+                trackClick('copy_referral_code');
+            });
+        }
+
+        function closeWidget() {
+            document.getElementById('viralWidget').style.display = 'none';
+            trackClick('close_viral_widget');
+        }
+
+        // Auto-show viral widget after 30 seconds
+        setTimeout(() => {
+            const widget = document.getElementById('viralWidget');
+            if (widget && !sessionStorage.getItem('viralWidgetShown')) {
+                widget.style.display = 'block';
+                sessionStorage.setItem('viralWidgetShown', 'true');
+            }
+        }, 30000);
+
+        // Exit intent detection - show share popup when user tries to leave
+        let exitIntentShown = false;
+        document.addEventListener('mouseleave', (e) => {
+            if (e.clientY < 0 && !exitIntentShown) {
+                exitIntentShown = true;
+                if (confirm('Wait! Share HelixOne with your network and get 30% commission on all referrals. Share now?')) {
+                    shareTwitter();
+                }
+            }
+        });
+
+        // Scroll-based engagement tracking
+        let scrollDepth = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            if (currentScroll > scrollDepth) {
+                scrollDepth = Math.floor(currentScroll / 25) * 25;
+                trackClick(`scroll_${scrollDepth}`);
+            }
+        });
+
+        // Auto-generate shareable images with user stats (placeholder)
+        function generateShareImage() {
+            // In production, use canvas API or backend service to generate custom images
+            console.log('Generating shareable image...');
+        }
+
+        // Social proof notifications (simulate live sign-ups)
+        const locations = ['New York', 'San Francisco', 'London', 'Singapore', 'Toronto', 'Sydney', 'Tokyo', 'Mumbai'];
+        function showSocialProof() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 30px;
+                background: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                z-index: 998;
+                animation: slideInLeft 0.5s ease-out;
+                max-width: 300px;
+            `;
+            const location = locations[Math.floor(Math.random() * locations.length)];
+            notification.innerHTML = `
+                <div style="font-weight: bold; color: #1e3a8a; margin-bottom: 5px;">🎉 New Sign-up!</div>
+                <div style="color: #6b7280;">Someone from ${location} just started their free trial</div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutLeft 0.5s ease-in';
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        }
+
+        // Show social proof every 15-30 seconds
+        setInterval(() => {
+            if (Math.random() > 0.3) {
+                showSocialProof();
+            }
+        }, Math.random() * 15000 + 15000);
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInLeft {
+                from { transform: translateX(-400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutLeft {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(-400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
